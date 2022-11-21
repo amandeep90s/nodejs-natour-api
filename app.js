@@ -49,6 +49,24 @@ app.post('/api/v1/tours', (req, res) => {
   );
 });
 
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (id > tours.length - 1) {
+    return res.status(404).json({ status: 'fail', message: 'Invalid Id' });
+  }
+  res
+    .status(200)
+    .json({ status: 'success', data: { tour: 'Tour updated successfully' } });
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (id > tours.length - 1) {
+    return res.status(404).json({ status: 'fail', message: 'Invalid Id' });
+  }
+  res.status(204).json({ status: 'success', data: null });
+});
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port: ${port}`);
