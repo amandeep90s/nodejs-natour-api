@@ -1,13 +1,25 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
+const path = require('path');
+
 const app = express();
 
+// Create a write stream (in append mode)
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' }
+);
+
+// Middelwares
 app.use(express.json());
+app.use(morgan('combined', { stream: accessLogStream }));
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
+// Route handlers
 const getAllTours = (req, res) => {
   res.status(200).json({
     message: 'success',
@@ -67,6 +79,7 @@ const deleteTour = (req, res) => {
   res.status(204).json({ status: 'success', data: null });
 };
 
+// Routes
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 // app.get('/api/v1/tours/:id', getTour);
@@ -80,6 +93,7 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
+// Start the server
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port: ${port}`);
