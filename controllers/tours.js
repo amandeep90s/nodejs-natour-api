@@ -13,11 +13,7 @@ const getAllTours = (req, res) => {
 };
 
 const getTour = (req, res) => {
-  const id = parseInt(req.params.id);
-  const tour = tours.find((item) => item.id === id);
-  if (!tour) {
-    return res.status(404).json({ status: 'fail', message: 'Invalid Id' });
-  }
+  const tour = tours.find((item) => item.id === parseInt(req.params.id));
 
   res.status(200).json({
     message: 'success',
@@ -46,21 +42,29 @@ const createTour = (req, res) => {
 };
 
 const updateTour = (req, res) => {
-  const id = parseInt(req.params.id);
-  if (id > tours.length - 1) {
-    return res.status(404).json({ status: 'fail', message: 'Invalid Id' });
-  }
   res
     .status(200)
     .json({ status: 'success', data: { tour: 'Tour updated successfully' } });
 };
 
 const deleteTour = (req, res) => {
-  const id = parseInt(req.params.id);
-  if (id > tours.length - 1) {
-    return res.status(404).json({ status: 'fail', message: 'Invalid Id' });
-  }
   res.status(204).json({ status: 'success', data: null });
 };
 
-module.exports = { getAllTours, getTour, createTour, updateTour, deleteTour };
+// Fourth param is the value of id parameter
+const checkTourID = (req, res, next, value) => {
+  const id = parseInt(value);
+  if (id > tours.length - 1) {
+    return res.status(404).json({ status: 'fail', message: 'Invalid Tour Id' });
+  }
+  next();
+};
+
+module.exports = {
+  getAllTours,
+  getTour,
+  createTour,
+  updateTour,
+  deleteTour,
+  checkTourID,
+};
