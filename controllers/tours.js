@@ -60,6 +60,15 @@ const checkTourID = (req, res, next, value) => {
   next();
 };
 
+const checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res
+      .status(400)
+      .json({ status: 'fail', message: 'Missing name or price' });
+  }
+  next();
+};
+
 module.exports = {
   getAllTours,
   getTour,
@@ -67,4 +76,5 @@ module.exports = {
   updateTour,
   deleteTour,
   checkTourID,
+  checkBody,
 };
