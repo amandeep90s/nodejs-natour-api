@@ -13,7 +13,7 @@ const getAllTours = (req, res) => {
 };
 
 const getTour = (req, res) => {
-  const tour = tours.find((item) => item.id === parseInt(req.params.id));
+  const tour = tours.find((item) => item.id === parseInt(req.params.id, 10));
 
   res.status(200).json({
     message: 'success',
@@ -23,7 +23,7 @@ const getTour = (req, res) => {
 
 const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+  const newTour = { id: newId, ...req.body };
 
   tours.push(newTour);
 
@@ -53,7 +53,7 @@ const deleteTour = (req, res) => {
 
 // Fourth param is the value of id parameter
 const checkTourID = (req, res, next, value) => {
-  const id = parseInt(value);
+  const id = parseInt(value, 10);
   if (id > tours.length - 1) {
     return res.status(404).json({ status: 'fail', message: 'Invalid Tour Id' });
   }

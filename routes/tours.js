@@ -1,6 +1,4 @@
 const express = require('express');
-const router = express.Router();
-
 const {
   getAllTours,
   getTour,
@@ -10,6 +8,9 @@ const {
   checkTourID,
   checkBody,
 } = require('../controllers/tours');
+
+const router = express.Router();
+
 router.param('id', checkTourID);
 
 router.route('/').get(getAllTours).post(checkBody, createTour);
