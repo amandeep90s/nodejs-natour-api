@@ -7,16 +7,18 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
-// Create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, 'access.log'),
-  { flags: 'a' }
-);
-
 // Middelwares
 app.use(express.json());
-app.use(morgan('combined', { stream: accessLogStream }));
+if (process.env.NODE_ENV === 'development') {
+  // Create a write stream (in append mode)
+  const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'),
+    { flags: 'a' }
+  );
 
+  app.use(morgan('combined', { stream: accessLogStream }));
+}
+app.use(express.static(`${__dirname}/public`));
 // Router mounting
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
