@@ -17,6 +17,13 @@ const getAllTours = async (req, res) => {
     } else {
       query = query.sort('-createdAt');
     }
+    // 4 Fields limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(`${fields} -__v -createdAt`);
+    } else {
+      query = query.select('-__v');
+    }
     // Execute query
     const tours = await query;
     res.status(200).json({
@@ -25,7 +32,7 @@ const getAllTours = async (req, res) => {
       data: { tours: tours },
     });
   } catch (error) {
-    res.status(404).son({ status: 'fail', message: error });
+    res.status(404).json({ status: 'fail', message: error });
   }
 };
 
