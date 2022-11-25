@@ -1,5 +1,12 @@
 const Tour = require('../models/tourModel');
 
+const aliasTopTours = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 const getAllTours = async (req, res) => {
   try {
     // 1 Filtering
@@ -20,7 +27,7 @@ const getAllTours = async (req, res) => {
     // 4 Fields limiting
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
-      query = query.select(`${fields} -__v -createdAt`);
+      query = query.select(fields);
     } else {
       query = query.select('-__v');
     }
@@ -100,4 +107,5 @@ module.exports = {
   createTour,
   updateTour,
   deleteTour,
+  aliasTopTours,
 };

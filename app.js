@@ -7,10 +7,10 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
-// Middelwares
+// Middleware
 app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
-  // Create a write stream (in append mode)
+  // Create write stream (in append mode)
   const accessLogStream = fs.createWriteStream(
     path.join(__dirname, 'access.log'),
     { flags: 'a' }
