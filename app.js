@@ -2,8 +2,10 @@ const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
+const AppError = require('./utils/appError');
 const toursRouter = require('./routes/tours');
 const usersRouter = require('./routes/users');
+const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
@@ -24,19 +26,8 @@ app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 //Handling unhandled routes
 app.all('*', (req, res, next) => {
-  const err = new Error(`Can't handle ${req.originalUrl} in this server`);
-  err.statusCode = 404;
-  err.status = 'fail';
-  next(err);
+  next(new AppError(`Can't handle ${req.originalUrl} in this server`, 404));
 });
-// Error handling middleware
-app.use((err, req, res) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+// Global Error handling middleware
+app.use(globalErrorHandler);
 module.exports = app;
