@@ -11,7 +11,7 @@
     "slugify": "^1.6.5",
     "validator": "^13.7.0"
   },
-  "description": "Nodejs Project",
+  "description": "Learning node, express and mongoDB",
   "devDependencies": {
     "eslint": "^8.28.0",
     "eslint-config-airbnb": "^19.0.4",

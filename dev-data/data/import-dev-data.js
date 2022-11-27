@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Tour = require('../../models/tourModel');
 
 // Need to define before app initialization
-dotenv.config({ path: '../../config.env' });
+dotenv.config({ path: '../../.env' });
 // Connecting to db
 mongoose
   .connect(process.env.DATABASE_URI || 'mongodb://0.0.0.0:27017/natoursDB')

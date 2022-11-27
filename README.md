@@ -1,2 +1,4 @@
-# nodejs-natour-api
-Build natour project with NodeJs
+# Natours Application
+
+Built using modern technologies: node.js, express, mongoDB, mongoose and friends 😁
+

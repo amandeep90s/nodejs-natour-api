@@ -8,7 +8,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 // Need to define before app initialization
-dotenv.config({ path: `${__dirname}/config.env` });
+dotenv.config({ path: `${__dirname}/.env` });
 
 const app = require('./app');
 
