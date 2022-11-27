@@ -22,5 +22,12 @@ app.use(express.static(`${__dirname}/public`));
 // Router mounting
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
+//Handling unhandled routes
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't handle ${req.originalUrl} in this server`,
+  });
+});
 
 module.exports = app;

@@ -1,22 +1,8 @@
 {
-  "name": "nodejs-natour-api",
-  "version": "1.0.0",
-  "description": "Nodejs Project",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon server.js",
-    "start:prod": "SET NODE_ENV=production && nodemon server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/amandeep90s/nodejs-natour-api.git"
-  },
   "author": "Amandeep Singh",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/amandeep90s/nodejs-natour-api/issues"
   },
-  "homepage": "https://github.com/amandeep90s/nodejs-natour-api#readme",
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -24,6 +10,7 @@
     "morgan": "^1.10.0",
     "slugify": "^1.6.5"
   },
+  "description": "Nodejs Project",
   "devDependencies": {
     "eslint": "^8.28.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -33,10 +20,25 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.11",
+    "ndb": "^1.1.5",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.0"
   },
   "engines": {
     "node": ">=18.12.1"
-  }
+  },
+  "homepage": "https://github.com/amandeep90s/nodejs-natour-api#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "nodejs-natour-api",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amandeep90s/nodejs-natour-api.git"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "start:prod": "SET NODE_ENV=production && nodemon server.js",
+    "debug": "ndb server.js"
+  },
+  "version": "1.0.0"
 }
