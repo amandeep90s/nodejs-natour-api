@@ -24,10 +24,19 @@ app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 //Handling unhandled routes
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    message: `Can't handle ${req.originalUrl} in this server`,
+  const err = new Error(`Can't handle ${req.originalUrl} in this server`);
+  err.statusCode = 404;
+  err.status = 'fail';
+  next(err);
+});
+// Error handling middleware
+app.use((err, req, res) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
   });
 });
-
 module.exports = app;
