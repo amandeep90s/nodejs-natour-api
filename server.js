@@ -13,4 +13,13 @@ mongoose.connect(process.env.DATABASE_URI || '').catch((error) => {
 
 // Start the server
 const port = process.env.PORT || 3000;
-app.listen(port);
+const server = app.listen(port);
+
+// Handling un-handle rejection error
+process.on('unhandledRejection', (err) => {
+  console.log('UnHandler rejectionI 💥 Shutting down!');
+  console.error(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
