@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -8,6 +9,7 @@ const signToken = (userId) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+// Signup route
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -20,6 +22,7 @@ const signUp = catchAsync(async (req, res, next) => {
   res.status(201).json({ status: 'success', token, data: { user: newUser } });
 });
 
+// Login route
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   // Check email and password exists
@@ -36,4 +39,46 @@ const login = catchAsync(async (req, res, next) => {
   const token = signToken(user._id);
   res.status(200).json({ status: 'success', token });
 });
-module.exports = { login, signUp };
+
+// Protected route
+const protectedRoute = catchAsync(async (req, res, next) => {
+  let token;
+  //Getting token and check if its there
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    next(
+      new AppError('You are not logged in! Please log in to get access', 401)
+    );
+  }
+  //Verification token
+  const decoded = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET_KEY
+  );
+  //Check if user still exists
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    next(
+      new AppError('The user belonging to this token does no longer exist.'),
+      401
+    );
+  }
+  //Check if user changed password after the token was issued
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please log in again', 401)
+    );
+  }
+
+  //Grant access to the protected route
+  req.user = freshUser;
+  next();
+});
+
+module.exports = { login, signUp, protectedRoute };
