@@ -93,4 +93,27 @@ const restrictTo =
     next();
   };
 
-module.exports = { login, signUp, protectedRoute, restrictTo };
+// Forgot password method
+const forgotPassword = catchAsync(async (req, res, next) => {
+  // Get user based on posted email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    next(new AppError('There is no user with this email address', 404));
+  }
+  // Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  user.save({ validateBeforeSave: false });
+  res.status(200).json({ status: 'success', resetToken });
+});
+// Reset password method
+const resetPassword = catchAsync(async (req, res, next) => {
+  //
+});
+module.exports = {
+  login,
+  signUp,
+  protectedRoute,
+  restrictTo,
+  forgotPassword,
+  resetPassword,
+};
