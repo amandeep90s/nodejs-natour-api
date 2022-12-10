@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetToken: String,
     passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
   },
   { timestamps: true }
 );
@@ -104,5 +109,11 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
+
+// Get only active user
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 module.exports = mongoose.model('User', userSchema);

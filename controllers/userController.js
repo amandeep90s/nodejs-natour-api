@@ -47,6 +47,7 @@ const deleteUser = (req, res) =>
     message: 'This route is not yet defined',
   });
 
+// Update the logged in user details
 const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError('This route is not for update password', 400));
@@ -64,6 +65,12 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// Delete the logged in user
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({ status: 'success', data: null });
+});
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -71,4 +78,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateMe,
+  deleteMe,
 };
