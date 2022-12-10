@@ -65,6 +65,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// Modify changedPasswordAt field on reset password
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 // Compare user password
 userSchema.methods.correctPassword = async function (
   candidatePassword,
