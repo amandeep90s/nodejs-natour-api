@@ -2,6 +2,8 @@ const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 const helmet = require('helmet');
 const path = require('path');
 const AppError = require('./utils/appError');
@@ -21,6 +23,10 @@ app.use(
     limit: '10kb',
   })
 );
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+// Data sanitization against XSS
+app.use(xssClean());
 // 3. Development logging
 if (process.env.NODE_ENV === 'development') {
   // Create write stream (in append mode)
