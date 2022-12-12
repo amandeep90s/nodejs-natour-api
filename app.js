@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const helmet = require('helmet');
+const hpp = require('hpp');
 const path = require('path');
 const AppError = require('./utils/appError');
 const toursRouter = require('./routes/tours');
@@ -17,17 +18,35 @@ const app = express();
 
 // 1. Set security http headers
 app.use(helmet());
+
 // 2. Body parser, reading data from body into req.body
 app.use(
   express.json({
     limit: '10kb',
   })
 );
-// Data sanitization against NoSQL query injection
+
+// 3. Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
-// Data sanitization against XSS
+
+// 4. Data sanitization against XSS
 app.use(xssClean());
-// 3. Development logging
+
+// Prevent paramter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'price',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'difficulty',
+      'maxGroupSize',
+    ],
+  })
+);
+
+// 5. Development logging
 if (process.env.NODE_ENV === 'development') {
   // Create write stream (in append mode)
   const accessLogStream = fs.createWriteStream(
@@ -36,9 +55,11 @@ if (process.env.NODE_ENV === 'development') {
   );
   app.use(morgan('combined', { stream: accessLogStream }));
 }
-// 4. Serving static files
+
+// 6. Serving static files
 app.use(express.static(`${__dirname}/public`));
-// 5. Limit requests from same IP address
+
+// 7. Limit requests from same IP address
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -46,15 +67,20 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests from this IP, please again in an hour!',
 });
+
 // Apply the rate limiting middleware to all requests
 app.use('/api', limiter);
+
 // Router mounting
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
+
 //Handling unhandled routes
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't handle ${req.originalUrl} in this server`, 404));
 });
+
 // Global Error handling middleware
 app.use(globalErrorHandler);
+
 module.exports = app;
