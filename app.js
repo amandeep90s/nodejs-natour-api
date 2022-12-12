@@ -2,6 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const path = require('path');
 const AppError = require('./utils/appError');
 const toursRouter = require('./routes/tours');
@@ -11,18 +12,27 @@ const globalErrorHandler = require('./controllers/errorController');
 const app = express();
 
 // Global Middleware
-app.use(express.json());
+
+// 1. Set security http headers
+app.use(helmet());
+// 2. Body parser, reading data from body into req.body
+app.use(
+  express.json({
+    limit: '10kb',
+  })
+);
+// 3. Development logging
 if (process.env.NODE_ENV === 'development') {
   // Create write stream (in append mode)
   const accessLogStream = fs.createWriteStream(
     path.join(__dirname, 'access.log'),
     { flags: 'a' }
   );
-
   app.use(morgan('combined', { stream: accessLogStream }));
 }
+// 4. Serving static files
 app.use(express.static(`${__dirname}/public`));
-
+// 5. Limit requests from same IP address
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -30,10 +40,8 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests from this IP, please again in an hour!',
 });
-
 // Apply the rate limiting middleware to all requests
 app.use('/api', limiter);
-
 // Router mounting
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
