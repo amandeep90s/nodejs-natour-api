@@ -8,8 +8,9 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const path = require('path');
 const AppError = require('./utils/appError');
-const toursRouter = require('./routes/tours');
-const usersRouter = require('./routes/users');
+const tourRouter = require('./routes/tours');
+const userRouter = require('./routes/users');
+const reviewRouter = require('./routes/reviews');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -72,8 +73,9 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Router mounting
-app.use('/api/v1/tours', toursRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //Handling unhandled routes
 app.all('*', (req, res, next) => {
