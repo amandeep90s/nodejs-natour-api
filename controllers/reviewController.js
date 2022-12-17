@@ -12,23 +12,23 @@ const getAllReviews = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: 'success', results: reviews.length, data: { reviews } });
 });
-
 // Create new review method
-const createReview = catchAsync(async (req, res, next) => {
-  if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user.id;
-
-  const newReview = await Review.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review: newReview,
-    },
-  });
-});
-
+const createReview = factory.createOne(Review);
 // Delete review with review id method
 const deleteReview = factory.deleteOne(Review);
+// Update review with review id method
+const updateReview = factory.updateOne(Review);
+// Middleware: Set tour and user id before creating review
+const setTourUserIds = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
-module.exports = { getAllReviews, createReview, deleteReview };
+module.exports = {
+  getAllReviews,
+  createReview,
+  deleteReview,
+  updateReview,
+  setTourUserIds,
+};
