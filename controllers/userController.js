@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 // Filter request body
 const filterRequestBody = (obj, ...allowedFields) => {
@@ -41,11 +42,8 @@ const updateUser = (req, res) =>
     message: 'This route is not yet defined',
   });
 
-const deleteUser = (req, res) =>
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
+// Delete user by admin method
+const deleteUser = factory.deleteOne(User);
 
 // Update the logged in user details
 const updateMe = catchAsync(async (req, res, next) => {
