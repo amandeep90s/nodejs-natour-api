@@ -13,35 +13,20 @@ const filterRequestBody = (obj, ...allowedFields) => {
   });
   return newObject;
 };
-
-const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: { users },
-  });
-});
-
+// Create user method
 const createUser = (req, res) =>
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yet defined',
+    message: 'This route is not defined! Please use /signup instead.',
   });
-
-const getUser = (req, res) =>
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-
+// Get all users method
+const getAllUsers = factory.getAll(User);
+// Get user detail method
+const getUser = factory.getOne(User);
 // Update user detail method
 const updateUser = factory.updateOne(User);
-
 // Delete user by admin method
 const deleteUser = factory.deleteOne(User);
-
 // Update the logged-in user details
 const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
@@ -59,7 +44,6 @@ const updateMe = catchAsync(async (req, res, next) => {
     },
   });
 });
-
 // Delete the logged-in user
 const deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });

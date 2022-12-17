@@ -1,48 +1,18 @@
 const Tour = require('../models/tourModel');
-const ApiFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
-const aliasTopTours = (req, res, next) => {
-  req.query.limit = 5;
-  req.query.sort = '-ratingsAverage,price';
-  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
-  next();
-};
-
-const getAllTours = catchAsync(async (req, res, next) => {
-  const features = new ApiFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query;
-
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: { tours: tours },
-  });
-});
-
-const getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate({
-    path: 'reviews',
-  });
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    message: 'success',
-    data: { tour: tour },
-  });
-});
-
+// Get all tours detail method
+const getAllTours = factory.getAll(Tour);
+// Get tour detail method
+const getTour = factory.getOne(Tour, { path: 'reviews' });
+// Create tour method
 const createTour = factory.createOne(Tour);
+// Update tour method
 const updateTour = factory.updateOne(Tour);
+// Delete tour method
 const deleteTour = factory.deleteOne(Tour);
-
+// Get tour stats method
 const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
@@ -62,7 +32,7 @@ const getTourStats = catchAsync(async (req, res, next) => {
   ]);
   res.status(200).json({ status: 'success', data: { stats } });
 });
-
+// Get monthly plan method
 const getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = parseInt(req.params.year, 10);
   const plan = await Tour.aggregate([
@@ -101,6 +71,13 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
   ]);
   res.status(200).json({ status: 'success', data: { plan } });
 });
+// Get top 5 tours method
+const aliasTopTours = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 
 module.exports = {
   getAllTours,
@@ -108,7 +85,7 @@ module.exports = {
   createTour,
   updateTour,
   deleteTour,
-  aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  aliasTopTours,
 };

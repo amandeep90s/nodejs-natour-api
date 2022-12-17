@@ -1,17 +1,10 @@
 const Review = require('../models/reviewModel');
-const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
 // Get all reviews method
-const getAllReviews = catchAsync(async (req, res, next) => {
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-
-  const reviews = await Review.find(filter);
-  res
-    .status(200)
-    .json({ status: 'success', results: reviews.length, data: { reviews } });
-});
+const getAllReviews = factory.getAll(Review);
+// Get review detail method
+const getReview = factory.getOne(Review);
 // Create new review method
 const createReview = factory.createOne(Review);
 // Delete review with review id method
@@ -27,6 +20,7 @@ const setTourUserIds = (req, res, next) => {
 
 module.exports = {
   getAllReviews,
+  getReview,
   createReview,
   deleteReview,
   updateReview,
