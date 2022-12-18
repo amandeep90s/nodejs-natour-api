@@ -27,7 +27,7 @@ router
 router
   .route('/')
   .get(getAllTours)
-  .post(protectedRoute, restrictTo('user', 'lead-guide'), createTour);
+  .post(protectedRoute, restrictTo('admin', 'lead-guide'), createTour);
 router
   .route('/:id')
   .get(getTour)
