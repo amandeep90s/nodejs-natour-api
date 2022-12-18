@@ -79,7 +79,7 @@ const aliasTopTours = (req, res, next) => {
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
-// Get tour within
+// Get tours within
 const getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
@@ -101,6 +101,41 @@ const getToursWithin = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: 'success', results: tours.length, data: { data: tours } });
 });
+// Get tour distances
+const getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng',
+        400
+      )
+    );
+  }
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [parseInt(lng, 10), parseInt(lat, 10)],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({ status: 'success', data: { data: distances } });
+});
 
 module.exports = {
   getAllTours,
@@ -112,4 +147,5 @@ module.exports = {
   getMonthlyPlan,
   aliasTopTours,
   getToursWithin,
+  getDistances,
 };
