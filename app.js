@@ -15,9 +15,16 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
+// Setup view engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Global Middleware
 
-// 1. Set security http headers
+// Set security http headers
 app.use(helmet());
 
 // 2. Body parser, reading data from body into req.body
@@ -27,10 +34,10 @@ app.use(
   })
 );
 
-// 3. Data sanitization against NoSQL query injection
+// Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
-// 4. Data sanitization against XSS
+// Data sanitization against XSS
 app.use(xssClean());
 
 // Prevent paramter pollution
@@ -47,7 +54,7 @@ app.use(
   })
 );
 
-// 5. Development logging
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   // Create write stream (in append mode)
   const accessLogStream = fs.createWriteStream(
@@ -57,10 +64,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined', { stream: accessLogStream }));
 }
 
-// 6. Serving static files
-app.use(express.static(`${__dirname}/public`));
-
-// 7. Limit requests from same IP address
+// Limit requests from same IP address
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -73,11 +77,14 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Router mounting
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
-//Handling unhandled routes
+// Handling unhandled routes
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't handle ${req.originalUrl} in this server`, 404));
 });
