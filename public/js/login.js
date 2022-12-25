@@ -5,9 +5,15 @@ const login = async (email, password) => {
       url: 'http://localhost:3000/api/v1/users/login',
       data: { email, password },
     });
-    console.log(result);
+
+    if (result.data.status === 'success') {
+      alert('Logged in successfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1500);
+    }
   } catch (error) {
-    console.error(error.response.data);
+    alert(error.response.data.message);
   }
 };
 

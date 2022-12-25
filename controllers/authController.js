@@ -105,6 +105,32 @@ const protectedRoute = catchAsync(async (req, res, next) => {
   next();
 });
 
+// Only for rendered pages, no errors!
+const isLoggedIn = catchAsync(async (req, res, next) => {
+  //Getting token and check if its there
+  if (req.cookies.jwt) {
+    //Verification token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET_KEY
+    );
+
+    //Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    //Grant access to the protected route
+    res.locals.user = currentUser;
+    return next();
+  }
+  next();
+});
+
 // Restrict middleware
 const restrictTo =
   (...roles) =>
@@ -193,6 +219,7 @@ module.exports = {
   login,
   signUp,
   protectedRoute,
+  isLoggedIn,
   restrictTo,
   forgotPassword,
   resetPassword,
