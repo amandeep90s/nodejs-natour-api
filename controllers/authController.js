@@ -51,6 +51,9 @@ const login = catchAsync(async (req, res, next) => {
   }
   // Check if user is existed and password is correct
   const user = await User.findOne({ email }).select('+password');
+  if (!user) {
+    return next(new AppError('User is not exist with email', 404));
+  }
   const validPassword = await user.correctPassword(password, user.password);
   if (!user || !validPassword) {
     return next(new AppError('Incorrect email or password', 401));
@@ -68,6 +71,8 @@ const protectedRoute = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {

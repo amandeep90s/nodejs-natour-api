@@ -6,6 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tours');
@@ -28,12 +29,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set security http headers
 app.use(helmet());
 
-// 2. Body parser, reading data from body into req.body
+// Body parser, reading data from body into req.body
 app.use(
   express.json({
     limit: '10kb',
   })
 );
+
+// Parse the data from cookie
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
