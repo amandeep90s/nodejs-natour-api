@@ -31,6 +31,15 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+// Logout route
+const logout = (req, res) => {
+  res.cookie('jwt', null, {
+    expiresIn: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 // Signup route
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -106,30 +115,34 @@ const protectedRoute = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages, no errors!
-const isLoggedIn = catchAsync(async (req, res, next) => {
+const isLoggedIn = async (req, res, next) => {
   //Getting token and check if its there
   if (req.cookies.jwt) {
-    //Verification token
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET_KEY
-    );
+    try {
+      //Verification token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET_KEY
+      );
 
-    //Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
+      //Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      //Grant access to the protected route
+      res.locals.user = currentUser;
+      return next();
+    } catch (error) {
       return next();
     }
-
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-    //Grant access to the protected route
-    res.locals.user = currentUser;
-    return next();
   }
   next();
-});
+};
 
 // Restrict middleware
 const restrictTo =
@@ -181,6 +194,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
+
 // Reset password method
 const resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
@@ -217,6 +231,7 @@ const updatePassword = catchAsync(async (req, res, next) => {
 
 module.exports = {
   login,
+  logout,
   signUp,
   protectedRoute,
   isLoggedIn,
