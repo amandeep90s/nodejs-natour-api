@@ -11,7 +11,9 @@ const getOverview = catchAsync(async (req, res, next) => {
 // Tour details method
 const getTour = catchAsync(async (req, res, next) => {
   const tourSlug = req.params.slug;
-  const tour = await Tour.findOne({ slug: tourSlug }).populate({
+  const tour = await Tour.findOne({
+    slug: tourSlug,
+  }).populate({
     path: 'reviews',
     fields: 'review rating user',
   });
@@ -20,7 +22,7 @@ const getTour = catchAsync(async (req, res, next) => {
     return next(new AppError('There is no tour with that name!', 404));
   }
 
-  res.status(200).render('tour', { title: tour.name, tour });
+  res.status(200).render('tour', { title: `${tour.name} Tour`, tour });
 });
 
 // Login page method
@@ -28,4 +30,8 @@ const getLoginForm = (req, res) => {
   res.status(200).render('login', { title: 'Log into your account' });
 };
 
-module.exports = { getOverview, getTour, getLoginForm };
+// Account page method
+const getAccount = (req, res) => {
+  res.status(200).render('account', { title: 'My Account' });
+};
+module.exports = { getOverview, getTour, getLoginForm, getAccount };

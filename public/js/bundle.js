@@ -11931,7 +11931,7 @@ var logout = /*#__PURE__*/function () {
         case 3:
           result = _context2.sent;
           if (result.data.status === 'success') {
-            location.reload();
+            location.assign('/login');
           }
           _context2.next = 10;
           break;

@@ -95,22 +95,23 @@ const protectedRoute = catchAsync(async (req, res, next) => {
     process.env.JWT_SECRET_KEY
   );
   //Check if user still exists
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser) {
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
     next(
       new AppError('The user belonging to this token does no longer exist.'),
       401
     );
   }
   //Check if user changed password after the token was issued
-  if (freshUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError('User recently changed password! Please log in again', 401)
     );
   }
 
   //Grant access to the protected route
-  req.user = freshUser;
+  req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
 
