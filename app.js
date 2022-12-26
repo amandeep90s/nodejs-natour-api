@@ -35,6 +35,7 @@ app.use(
     limit: '10kb',
   })
 );
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Parse the data from cookie
 app.use(cookieParser());
