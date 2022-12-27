@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const {
   getAllUsers,
   getUser,
@@ -9,6 +8,7 @@ const {
   updateMe,
   deleteMe,
   getMe,
+  uploadUserPhoto,
 } = require('../controllers/userController');
 const {
   login,
@@ -21,7 +21,6 @@ const {
   restrictTo,
 } = require('../controllers/authController');
 
-const upload = multer({ dest: 'public/img/users' });
 const router = express.Router();
 
 router.post('/signup', signUp);
@@ -33,7 +32,7 @@ router.patch('/reset-password/:token', resetPassword);
 router.use(protectedRoute);
 router.patch('/update-password', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/update-me', upload.single('photo'), updateMe);
+router.patch('/update-me', uploadUserPhoto, updateMe);
 router.delete('/delete-me', deleteMe);
 // Restricted all routes after this to admin only
 router.use(restrictTo('admin'));
