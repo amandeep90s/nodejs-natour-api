@@ -176,11 +176,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
   const message = `Forgot your password? Submit a PATCH request with your new password and confirmPassword to: \n${resetUrl}.\nIf you didn't forget your password, please ignore this email.`;
   try {
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'Your password reset token (valid for 10 minutes)',
-    //   message,
-    // });
+    await new Email(user, resetUrl).sendPasswordReset();
 
     res
       .status(200)
