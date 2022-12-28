@@ -14,7 +14,7 @@ class Email {
     if (process.env.NODE_ENV === 'production') {
       // Sendgrid
       return nodemailer.createTransport({
-        service: 'SendGrid,
+        service: 'SendGrid',
         auth: {
           user: process.env.SENDGRID_USERNAME,
           pass: process.env.SENDGRID_PASSWORD,
@@ -55,7 +55,10 @@ class Email {
   }
 
   async sendPasswordReset() {
-    await this.send('passwordReset', 'Your password reset token (valid for 10 minutes)'); 
+    await this.send(
+      'passwordReset',
+      'Your password reset token (valid for 10 minutes)'
+    );
   }
 }
 
