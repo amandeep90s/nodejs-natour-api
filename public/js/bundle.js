@@ -12158,12 +12158,11 @@ if (updateUserDataForm) {
   updateUserDataForm.addEventListener('submit', function (event) {
     event.preventDefault();
     // Values
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _updateSettings.updateSettings)({
-      name: name,
-      email: email
-    }, 'data');
+    var form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    (0, _updateSettings.updateSettings)(form, 'data');
   });
 }
 if (updateUserPassForm) {
@@ -12173,13 +12172,13 @@ if (updateUserPassForm) {
     var passwordCurrent = document.getElementById('password-current').value;
     var password = document.getElementById('password').value;
     var passwordConfirm = document.getElementById('password-confirm').value;
-    document.querySelector('.btn--save-password').value = 'Updating...';
+    document.querySelector('.btn--save-password').textContent = 'Updating...';
     (0, _updateSettings.updateSettings)({
       passwordCurrent: passwordCurrent,
       password: password,
       passwordConfirm: passwordConfirm
     }, 'password');
-    document.querySelector('.btn--save-password').value = 'Save password';
+    document.querySelector('.btn--save-password').textContent = 'Save password';
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
@@ -12213,7 +12212,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50928" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54922" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
