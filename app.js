@@ -28,7 +28,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Global Middleware
 
 // Set security http headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // Body parser, reading data from body into req.body
 app.use(
