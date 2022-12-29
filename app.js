@@ -7,6 +7,7 @@ const xssClean = require('xss-clean');
 const helmet = require('helmet');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 const path = require('path');
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tours');
@@ -87,6 +88,9 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 app.use('/api', limiter);
+
+// Apply the compression middleware
+app.use(compression());
 
 // Router mounting
 
