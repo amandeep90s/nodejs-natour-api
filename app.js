@@ -1,5 +1,6 @@
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -24,6 +25,10 @@ app.enable('trust proxy');
 // Setup view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+
+// Implementing CORS
+app.use(cors());
+app.options('*', cors());
 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
