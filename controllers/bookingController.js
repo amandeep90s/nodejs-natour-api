@@ -1,7 +1,7 @@
 const Stripe = require('stripe');
 const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
-const handleFactory = require('../controllers/handlerFactory');
+const handleFactory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -55,4 +55,18 @@ const createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
-module.exports = { createBookingCheckout, getCheckoutSession };
+const createBooking = handleFactory.createOne(Booking);
+const getBooking = handleFactory.getOne(Booking);
+const getAllBookings = handleFactory.getAll(Booking);
+const updateBooking = handleFactory.updateOne(Booking);
+const deleteBooking = handleFactory.deleteOne(Booking);
+
+module.exports = {
+  createBookingCheckout,
+  getCheckoutSession,
+  createBooking,
+  getBooking,
+  getAllBookings,
+  updateBooking,
+  deleteBooking,
+};
