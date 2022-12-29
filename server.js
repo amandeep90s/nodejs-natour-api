@@ -29,3 +29,11 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// SIGTERM rejection error
+process.on('SIGTERM', () => {
+  console.log('SIGTERM REEIVED. Shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
